@@ -1,9 +1,9 @@
-use crate::{Slaw, slaw};
+use crate::{Protein, Slaw, protein, slaw};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub struct WrongIlk;
 
-macro_rules! slaw_from {
+macro_rules! impl_slaw_from {
     ($host:ty as $conv:expr) => {
         impl<'a> From<$host> for Slaw {
             fn from(val: $host) -> Slaw {
@@ -21,39 +21,53 @@ macro_rules! slaw_from {
 }
 
 // Conversion from standard Rust values into Slaw
-slaw_from!(() as |_| Slaw::nil());
-slaw_from!(bool as Slaw::boolean);
-slaw_from!(String as ref Slaw::string);
-slaw_from!(&'a str as Slaw::string);
+impl_slaw_from!(() as |_| Slaw::nil());
+impl_slaw_from!(bool as Slaw::boolean);
+impl_slaw_from!(String as ref Slaw::string);
+impl_slaw_from!(&'a str as Slaw::string);
 
 // Conversion from &slaw to standard Rust values
-macro_rules! slaw_into {
+macro_rules! impl_try_from_slaw {
     ($transubstance:ty) => {
-        impl<'a> TryInto<$transubstance> for &'a slaw {
+        impl_try_from_slaw!($transubstance as $transubstance);
+    };
+    ($transubstance:ty as consuming) => {
+        impl_try_from_slaw!($transubstance as $transubstance as consuming);
+    };
+    ($t1:ty as $t2:ty) => {
+        impl<'a> TryFrom<&'a slaw> for $t1 {
             type Error = WrongIlk;
 
-            fn try_into(self) -> Result<$transubstance, Self::Error> {
-                self.try_emit::<$transubstance>()
-                    .map(|s| s.into())
-                    .ok_or(WrongIlk)
+            fn try_from(s: &'a slaw) -> Result<$t1, Self::Error> {
+                s.try_emit::<$t2>().map(|s| s.into()).ok_or(WrongIlk)
             }
         }
     };
-    ($t1:ty as $t2:ty) => {
-        impl<'a> TryInto<$t1> for &'a slaw {
+    ($t1:ty as $t2:ty as consuming) => {
+        impl_try_from_slaw!($t1 as $t2);
+        impl<'a> TryFrom<Slaw> for $t1 {
             type Error = WrongIlk;
 
-            fn try_into(self) -> Result<$t1, Self::Error> {
-                self.try_emit::<$t2>().map(|s| s.into()).ok_or(WrongIlk)
+            fn try_from(s: Slaw) -> Result<$t1, Self::Error> {
+                s.try_emit::<$t2>().map(|s| s.into()).ok_or(WrongIlk)
             }
         }
     };
 }
 
-slaw_into!(());
-slaw_into!(&'a str);
-slaw_into!(String as &str);
-slaw_into!(bool);
+impl_try_from_slaw!(() as consuming);
+impl_try_from_slaw!(&'a str);
+impl_try_from_slaw!(String as &str as consuming);
+impl_try_from_slaw!(bool as consuming);
+// impl_try_from_slaw!(&'a protein);
+
+impl TryFrom<Slaw> for Protein {
+    type Error = WrongIlk;
+
+    fn try_from(s: Slaw) -> Result<Self, Self::Error> {
+        Protein::from_slaw(s).ok_or(WrongIlk)
+    }
+}
 
 #[cfg(test)]
 mod slaw_from_tests {
@@ -74,6 +88,10 @@ mod slaw_into_tests {
 
     #[test]
     fn test_slaw_into_rumpus() {
-        // assert_eq!(Slaw::nil().try_into(), Ok((())));
+        assert_eq!(Slaw::nil().try_into(), Ok(()));
+        assert_eq!(Slaw::boolean(true).try_into(), Ok(true));
+        assert_eq!(Slaw::string("hello").try_into(), Ok("hello".to_string()));
+        assert_eq!(Slaw::string("hello").as_slaw().try_into(), Ok("hello"));
+        // FIXME: add protein and Protein tests
     }
 }

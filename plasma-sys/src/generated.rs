@@ -408,6 +408,7 @@ pub const P_tmpdir: &[u8; 10] = b"/var/tmp/\0";
 pub const L_tmpnam: u32 = 1024;
 pub const TMP_MAX: u32 = 308915776;
 pub const L_ctermid: u32 = 1024;
+pub const __GNUC_VA_LIST: u32 = 1;
 pub type int8 = ::std::os::raw::c_schar;
 pub type unt8 = ::std::os::raw::c_uchar;
 pub type int16 = ::std::os::raw::c_short;
@@ -8932,6 +8933,7 @@ const _: () = {
     ["Offset of field: slaw_write_handler::cookie"]
         [::std::mem::offset_of!(slaw_write_handler, cookie) - 24usize];
 };
+pub type __gnuc_va_list = __builtin_va_list;
 pub type __builtin_va_list = *mut ::std::os::raw::c_char;
 unsafe extern "C" {
     pub fn ob_error_string(err: ob_retort) -> *const ::std::os::raw::c_char;
@@ -11801,4 +11803,15 @@ unsafe extern "C" {
         options: bslaw,
         f: *mut slaw_output,
     ) -> ob_retort;
+    pub fn slaw_strings_join_slabu(sb: *mut slabu, sep: *const ::std::os::raw::c_char) -> slaw;
+    pub fn slaw_strings_join_slabu_f(sb: *mut slabu, sep: *const ::std::os::raw::c_char) -> slaw;
+    pub fn slabu_of_strings_from_split(
+        str_: *const ::std::os::raw::c_char,
+        sep: *const ::std::os::raw::c_char,
+    ) -> *mut slabu;
+    pub fn slaw_string_vformat(fmt: *const ::std::os::raw::c_char, ap: va_list) -> slaw;
+    pub fn slaw_string_format(fmt: *const ::std::os::raw::c_char, ...) -> slaw;
+    pub fn slaw_strings_join(strlist: bslaw, sep: *const ::std::os::raw::c_char) -> slaw;
+    pub fn slaw_strings_join_f(strlist: slaw, sep: *const ::std::os::raw::c_char) -> slaw;
+    pub fn slaw_string_is_valid_utf8(s: slaw) -> bool;
 }

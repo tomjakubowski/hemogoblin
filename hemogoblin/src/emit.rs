@@ -1,6 +1,6 @@
 use plasma_sys::{
     slaw_boolean_emit, slaw_is_boolean, slaw_is_nil, slaw_is_protein, slaw_is_string,
-    slaw_string_emit, slaw_string_emit_length,
+    slaw_string_emit, slaw_string_emit_length, slaw_string_is_valid_utf8,
 };
 
 use crate::{protein, slaw};
@@ -25,7 +25,8 @@ macro_rules! guard {
 
 impl<'a> SlawEmit<'a> for &'a str {
     fn can_emit(slaw: &slaw) -> bool {
-        unsafe { slaw_is_string(slaw.as_bslaw()) }
+        // FIXME: fix upstream
+        unsafe { slaw_string_is_valid_utf8(slaw.as_bslaw() as *mut _) }
     }
     fn guarded_emit(slaw: &'a slaw) -> &'a str {
         let bslaw = slaw.as_bslaw();
@@ -36,6 +37,8 @@ impl<'a> SlawEmit<'a> for &'a str {
             assert!(cstr_len >= 0);
             let byteslice = std::slice::from_raw_parts(cstr, cstr_len as usize);
             match std::str::from_utf8(byteslice) {
+                // NB: malefactors can DOS application users by crafting slaw strings with bad
+                // UTF-8 in them.  this is true of Plasma in general
                 Err(std::str::Utf8Error { .. }) => panic!("Bad UTF-8 in slaw string"),
                 Ok(x) => x,
             }
