@@ -24,10 +24,17 @@ To run the test suite with asan + leak detection:
 ASAN_OPTIONS=detect_leaks=1 RUSTFLAGS="-Zsanitizer=address" cargo +nightly test
 ```
 
-This produces some noise on macos which seems to be cruft stemming from the OS
-and/or Rust test suite runtime. Still need to figure out how to plug these leaks
-or mark them as ignored.
+On my Mac, this produces four noisy leaks stemming from libobjc and/or libdyld,
+which occur even in a trivial empty test suite.  To suppress these, pass the
+provided suppressions file:
 
-To see how the leak detection works, comment out the `slaw_free` call from `Slaw::drop()`.
+```
+ASAN_OPTIONS=detect_leaks=1 LSAN_OPTIONS=suppressions=$PWD/etc/suppressions.txt RUSTFLAGS="-Zsanitizer=address" cargo +nightly test
+```
+
+To see how the leak detection works when bugs in the Rust bindings cause a leak,
+comment out the `slaw_free` call from `Slaw::drop()`.  This causes every slaw
+allocation made by the bindings to leak.  Alternately, call
+`std::mem::forget()` on various Slaw values in the test suite.
 
 [bindgen]: <https://github.com/rust-lang/rust-bindgen>

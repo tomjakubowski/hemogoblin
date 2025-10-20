@@ -1,3 +1,3 @@
 [workspace]
-members = ["hemogoblin", "plasma-sys"]
+members = ["hemogoblin", "plasma-sys", "the-emptiest-package"]
 resolver = "3"
