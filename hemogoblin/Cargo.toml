@@ -1,0 +1,8 @@
+[package]
+name = "hemogoblin"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+
+[dependencies]
+plasma-sys = { path = "../plasma-sys" }
+libc = "0.2.177"

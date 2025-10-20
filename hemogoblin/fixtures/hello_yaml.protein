@@ -1,0 +1,8 @@
+%YAML 1.1
+%TAG ! tag:oblong.com,2009:slaw/
+--- !protein
+descrips: [ob-standard-protein-greeting]
+ingests:
+  message: "hello"
+  recipient: "world"
+

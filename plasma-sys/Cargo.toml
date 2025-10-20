@@ -1,0 +1,7 @@
+[package]
+name = "plasma-sys"
+edition = "2024"
+license = "MIT"
+
+[build-dependencies]
+cc = "1.2.41"
