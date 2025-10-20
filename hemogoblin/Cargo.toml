@@ -9,4 +9,3 @@ readme = "README.md"
 
 [dependencies]
 plasma-sys = { path = "../plasma-sys", version = "0.0.1" }
-libc = "0.2.177"

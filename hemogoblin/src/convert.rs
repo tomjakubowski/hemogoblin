@@ -1,4 +1,4 @@
-use crate::{Protein, Slaw, protein, slaw};
+use crate::{Protein, Slaw, slaw};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub struct WrongIlk;

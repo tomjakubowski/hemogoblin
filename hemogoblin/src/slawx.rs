@@ -1,10 +1,10 @@
 //! Bindings to c slaw and bslaw
 
-use libc::c_char;
 use plasma_sys::{
     bslaw, slaw_boolean, slaw_nil, slaw_spew_overview_to_string, slaw_string_from_substring,
     slawx_equal,
 };
+use std::ffi::c_char;
 use std::fmt::Debug;
 use std::ops::Deref;
 use std::ptr::NonNull;
