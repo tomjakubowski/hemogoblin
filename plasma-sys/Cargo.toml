@@ -5,6 +5,7 @@ edition = "2024"
 license = "MIT"
 publish = true
 description = "FFI bindings for libPlasma"
+readme = "README.md"
 
 [build-dependencies]
 cc = "1.2.41"

@@ -1,4 +1,6 @@
+mod convert;
 mod emit;
+mod ilk;
 mod io;
 pub mod loam;
 mod proteins;

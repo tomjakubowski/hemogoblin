@@ -137,6 +137,18 @@ impl slaw {
         format!("{:?}", self)
     }
 
+    pub fn is_nil(&self) -> bool {
+        self.can_emit::<()>()
+    }
+
+    pub fn is_boolean(&self) -> bool {
+        self.can_emit::<bool>()
+    }
+
+    pub fn is_string(&self) -> bool {
+        self.can_emit::<&str>()
+    }
+
     pub fn is_protein(&self) -> bool {
         self.can_emit::<&protein>()
     }
