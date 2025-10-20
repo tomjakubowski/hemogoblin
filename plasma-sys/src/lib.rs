@@ -1,5 +1,3 @@
-#![allow(non_camel_case_types)]
-
 #[cfg(test)]
 mod tests;
 
@@ -11,5 +9,6 @@ mod tests;
 mod generated;
 
 pub use generated::*;
-// include!("generated.rs");
+
+#[allow(non_camel_case_types)]
 pub type slaw_guts = _slaw;

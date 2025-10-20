@@ -1,4 +1,25 @@
+use std::path::PathBuf;
+
+use bindgen;
+
 fn main() {
+    // generate FFI bindings
+    println!("cargo:rerun-if-changed=all-the-headers.h");
+
+    let bindings = bindgen::Builder::default()
+        .header("all-the-headers.h")
+        .merge_extern_blocks(true)
+        .generate_comments(false) // this would be nice but it's buggy
+        .clang_arg("-I.")
+        .generate()
+        .expect("Failed to generate bindings");
+    let out_path = PathBuf::from(std::env::var("OUT_DIR").unwrap());
+    bindings
+        .write_to_file(out_path.join("generated.rs"))
+        .expect("Couldn't write bindings!");
+
+    // build + link selected bits from libLoam + libPlasma
+
     // FIXME: hack to get this building on tom's mac for POC... should either vendor yaml (sigh) or
     // stop vendoring altogether and use a prebuilt/installed libPlasma
     println!("cargo:rustc-link-search=/opt/homebrew/lib/");

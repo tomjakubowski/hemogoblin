@@ -1,0 +1,5 @@
+%YAML 1.1
+%TAG ! tag:oblong.com,2009:slaw/
+--- !protein
+descrips: !badutf8 "\xc3\x28 was the best of times it was the blurst of times"
+ingests: !null # actually slaw_nil

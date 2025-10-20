@@ -25,7 +25,13 @@ macro_rules! guard {
 
 impl<'a> SlawEmit<'a> for &'a str {
     fn can_emit(slaw: &slaw) -> bool {
-        // FIXME: fix upstream
+        // FIXME: fix the need to cast to *mut _ upstream
+        // (https://github.com/plasma-hamper/plasma/pull/19).
+
+        // Arguably it is too expensive to call slaw_string_is_valid_utf8 here, but it's More
+        // Correct (tm) since we cannot emit a &str unless the contents are assuredly utf8. The
+        // alternative is to panic (as below). This may be a sign the design of this trait can be
+        // improved.
         unsafe { slaw_string_is_valid_utf8(slaw.as_bslaw() as *mut _) }
     }
     fn guarded_emit(slaw: &'a slaw) -> &'a str {
@@ -36,12 +42,8 @@ impl<'a> SlawEmit<'a> for &'a str {
             let cstr_len = slaw_string_emit_length(slaw.as_bslaw());
             assert!(cstr_len >= 0);
             let byteslice = std::slice::from_raw_parts(cstr, cstr_len as usize);
-            match std::str::from_utf8(byteslice) {
-                // NB: malefactors can DOS application users by crafting slaw strings with bad
-                // UTF-8 in them.  this is true of Plasma in general
-                Err(std::str::Utf8Error { .. }) => panic!("Bad UTF-8 in slaw string"),
-                Ok(x) => x,
-            }
+            // Safety: we checked utf8ness in the guard (and trust that ob_analyze_utf8 is correct)
+            std::str::from_utf8_unchecked(byteslice)
         }
     }
 }
