@@ -1,6 +1,6 @@
 [package]
 name = "hemogoblin"
-version = "0.0.1"
+version = "0.0.2"
 edition = "2024"
 license = "MIT OR Apache-2.0"
 publish = true
@@ -8,4 +8,4 @@ description = "Safe, high-level bindings to libPlasma"
 readme = "README.md"
 
 [dependencies]
-plasma-sys = { path = "../plasma-sys", version = "0.0.1" }
+plasma-sys = { path = "../plasma-sys", version = "0.0.2" }
